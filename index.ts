@@ -1,5 +1,3 @@
-// Extra stuff above module can be deleted.
-
 module.exports = async function (context: any, req: any) {
     let MASTERPASS = "ikbenadmin"
 
@@ -19,7 +17,9 @@ module.exports = async function (context: any, req: any) {
     }
     // Target is trying to save his km
     else {
-        // SQL MAGIC HERE
+        context.res = {
+            body: "a worker"
+        }
     }
 }
 
@@ -28,7 +28,7 @@ function generateLink(name: string, vehicleCode: string, km: number) {
 
     // SQL SAVE THE SESSION ID TO THE RIGHT USER
 
-    let url = `?${ name }?${ vehicleCode }?${ km }?${ sessionID }`
+    let url = `http://127.0.0.1:5500/?${ name }?${ vehicleCode }?${ km }?${ sessionID }`
     return url
 }
 

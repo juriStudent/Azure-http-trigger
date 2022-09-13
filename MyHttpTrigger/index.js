@@ -1,3 +1,13 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 module.exports = function (context, req) {
     return __awaiter(this, void 0, void 0, function* () {
         let MASTERPASS = "ikbenadmin";
@@ -14,14 +24,16 @@ module.exports = function (context, req) {
         }
         // Target is trying to save his km
         else {
-            // SQL MAGIC HERE
+            context.res = {
+                body: "a worker"
+            };
         }
     });
 };
 function generateLink(name, vehicleCode, km) {
     let sessionID = randomCodeGenerator(10);
     // SQL SAVE THE SESSION ID TO THE RIGHT USER
-    let url = `?${name}?${vehicleCode}?${km}?${sessionID}`;
+    let url = `http://127.0.0.1:5500/?${name}?${vehicleCode}?${km}?${sessionID}`;
     return url;
 }
 function randomCodeGenerator(length) {
