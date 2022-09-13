@@ -1,0 +1,16 @@
+{
+  "bindings": [
+  {
+      "type": "httpTrigger",
+      "name": "req",
+      "direction": "in",
+      "methods": [ "get" ],
+      "route": "{name}/{vehicleCode}/{km}/{sessionID}"
+  },
+  {
+      "type": "http",
+      "name": "res",
+      "direction": "out"
+  }
+  ]
+}
