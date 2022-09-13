@@ -8,6 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+let worker = {
+    name: "Cedric",
+    vehicleCode: "ABC123",
+    km: 1000,
+    sessionID: "XYZZZZ"
+};
 module.exports = function (context, req) {
     return __awaiter(this, void 0, void 0, function* () {
         let MASTERPASS = "ikbenadmin";
@@ -22,18 +28,41 @@ module.exports = function (context, req) {
                 body: url
             };
         }
-        // Target is trying to save his km
+        // Target is trying to save his km.
         else {
-            context.res = {
-                body: "a worker"
-            };
+            // Search for the worker's name and get his values.
+            if (worker.sessionID == sessionID) {
+                // update the database, remove the sessionID.
+                // get the km.
+                if (km < worker.km) {
+                    context.res = {
+                        // send the same value back.
+                        // redirect back to the same link, update the 
+                        // Inject link into an html template???????
+                        body: `http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}`
+                    };
+                }
+                else {
+                    worker.sessionID == null;
+                    // SQL update workers km
+                    worker.km = km;
+                    context.res = {
+                        body: `Worker's new km is: ${worker.km}km`
+                    };
+                }
+            }
+            else {
+                // User's sessionID is not valid. Tell him his link is invalid.
+            }
         }
     });
 };
 function generateLink(name, vehicleCode, km) {
     let sessionID = randomCodeGenerator(10);
-    // SQL SAVE THE SESSION ID TO THE RIGHT USER
-    let url = `http://127.0.0.1:5500/?${name}?${vehicleCode}?${km}?${sessionID}`;
+    //Search for the worker's name and get his values.
+    //change the allowed sessionID.
+    worker.sessionID = sessionID;
+    let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleCode}?${worker.km}?${sessionID}`;
     return url;
 }
 function randomCodeGenerator(length) {
