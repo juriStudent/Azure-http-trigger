@@ -33,11 +33,11 @@ module.exports = async function (context: any, req: any) {
                     // send the same value back.
                     // redirect back to the same link, update the 
                     // Inject link into an html template???????
-                    body: `http://127.0.0.1:5500/?${ worker.name }?${ worker.vehicleCode }?${ worker.km }?${ sessionID }`
+                    body: `KM LOWER THAN IN THE DATABASE - http://127.0.0.1:5500/?${ worker.name }?${ worker.vehicleCode }?${ worker.km }?${ sessionID }`
                 }
             }
             else {
-                worker.sessionID == null
+                worker.sessionID = randomCodeGenerator(10)
                 // SQL update workers km
                 worker.km = km
 
@@ -47,6 +47,9 @@ module.exports = async function (context: any, req: any) {
             }
         }
         else {
+            context.res = {
+                body: "INVALID sessionID"
+            }
             // User's sessionID is not valid. Tell him his link is invalid.
         }
     }

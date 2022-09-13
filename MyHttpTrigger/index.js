@@ -39,11 +39,11 @@ module.exports = function (context, req) {
                         // send the same value back.
                         // redirect back to the same link, update the 
                         // Inject link into an html template???????
-                        body: `http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}`
+                        body: `KM LOWER THAN IN THE DATABASE - http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}`
                     };
                 }
                 else {
-                    worker.sessionID == null;
+                    worker.sessionID = randomCodeGenerator(10);
                     // SQL update workers km
                     worker.km = km;
                     context.res = {
@@ -52,6 +52,9 @@ module.exports = function (context, req) {
                 }
             }
             else {
+                context.res = {
+                    body: "INVALID sessionID"
+                };
                 // User's sessionID is not valid. Tell him his link is invalid.
             }
         }
@@ -62,6 +65,7 @@ function generateLink(name, vehicleCode, km) {
     //Search for the worker's name and get his values.
     //change the allowed sessionID.
     worker.sessionID = sessionID;
+    // http://localhost:7071/api/Cedric/adasdasd/123/ikbenadmin
     let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleCode}?${worker.km}?${sessionID}`;
     return url;
 }
