@@ -5,7 +5,7 @@
       "name": "req",
       "direction": "in",
       "methods": [ "get" ],
-      "route": "{name}/{vehicleCode}/{km}/{sessionID}"
+      "route": "{name}/{vehicleDescription}/{km}/{sessionID}"
   },
   {
       "type": "http",

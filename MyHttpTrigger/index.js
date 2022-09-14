@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // EXAMPLE
 let worker = {
     name: "Cedric",
-    vehicleCode: "ABC123",
+    vehicleDescription: "ABC123",
     km: 1000,
     sessionID: "XYZZZZ"
 };
@@ -21,12 +21,12 @@ module.exports = function (context, req) {
     return __awaiter(this, void 0, void 0, function* () {
         let MASTERPASS = "ikbenadmin";
         var name = context.bindingData.name;
-        var vehicleCode = context.bindingData.vehicleCode;
+        var vehicleDescription = context.bindingData.vehicleDescription;
         var km = context.bindingData.km;
         var sessionID = context.bindingData.sessionID;
         // admin wants to generate a link for the target.
         if (sessionID == MASTERPASS) {
-            let url = generateLink(name, vehicleCode, km);
+            let url = generateLink(name, vehicleDescription, km);
             context.res = {
                 body: url
             };
@@ -39,7 +39,7 @@ module.exports = function (context, req) {
                 // get the km.
                 if (km < worker.km) {
                     // INDEX SITE COMES HERE
-                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}?low" />`, headers: { "Content-Type": "text/html" } }
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?low" />`, headers: { "Content-Type": "text/html" } }
                     context.res = res;
                 }
                 else {
@@ -48,7 +48,7 @@ module.exports = function (context, req) {
                     worker.km = km;
 
                     // INDEX SITE COMES HERE
-                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}?ok" />`, headers: { "Content-Type": "text/html" } }
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?ok" />`, headers: { "Content-Type": "text/html" } }
                     context.res = res;
                 }
             }
@@ -61,14 +61,14 @@ module.exports = function (context, req) {
         }
     });
 };
-function generateLink(name, vehicleCode, km) {
+function generateLink(name, vehicleDescription, km) {
     let sessionID = randomCodeGenerator(10);
     //Search for the worker's name and get his values.
     //change the allowed sessionID.
     worker.sessionID = sessionID;
 
     // INDEX SITE COMES HERE
-    let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleCode}?${worker.km}?${sessionID}`;
+    let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleDescription}?${worker.km}?${sessionID}`;
     return url;
 }
 function randomCodeGenerator(length) {
