@@ -1,4 +1,10 @@
 "use strict";
+
+// CONFIG ---- Start with "http(s)://"" and end with a "/".
+const URLDOMAIN = "http://127.0.0.1:5500/"
+// CONFIG ----
+
+
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,15 +13,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-};
-// EXAMPLE
+}
+
+// EXAMPLE DB
 let worker = {
     name: "Cedric",
     vehicleDescription: "ABC123",
     km: 1000,
     sessionID: "XYZZZZ"
-};
-// EXAMPLE
+}
+// EXAMPLE DB
 
 module.exports = function (context, req) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -38,8 +45,8 @@ module.exports = function (context, req) {
                 // update the database, remove the sessionID.
                 // get the km.
                 if (km < worker.km) {
-                    // INDEX SITE COMES HERE
-                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?low" />`, headers: { "Content-Type": "text/html" } }
+                    // The value that the user has given is lower than what's in the database.
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?low" />`, headers: { "Content-Type": "text/html" } }
                     context.res = res;
                 }
                 else {
@@ -47,8 +54,8 @@ module.exports = function (context, req) {
                     // SQL update workers km
                     worker.km = km;
 
-                    // INDEX SITE COMES HERE
-                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?ok" />`, headers: { "Content-Type": "text/html" } }
+                    // The value that the user has given is ok!
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${worker.name}?${worker.vehicleDescription}?${worker.km}?${sessionID}?ok" />`, headers: { "Content-Type": "text/html" } }
                     context.res = res;
                 }
             }
@@ -60,7 +67,8 @@ module.exports = function (context, req) {
             }
         }
     });
-};
+}
+
 function generateLink(name, vehicleDescription, km) {
     let sessionID = randomCodeGenerator(10);
     //Search for the worker's name and get his values.
@@ -68,9 +76,10 @@ function generateLink(name, vehicleDescription, km) {
     worker.sessionID = sessionID;
 
     // INDEX SITE COMES HERE
-    let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleDescription}?${worker.km}?${sessionID}`;
+    let url = `${URLDOMAIN}?${name}?${worker.vehicleDescription}?${worker.km}?${sessionID}`;
     return url;
 }
+
 function randomCodeGenerator(length) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
