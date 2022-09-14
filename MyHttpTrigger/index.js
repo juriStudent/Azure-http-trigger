@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// EXAMPLE
 let worker = {
     name: "Cedric",
     vehicleCode: "ABC123",
     km: 1000,
     sessionID: "XYZZZZ"
 };
+// EXAMPLE
+
 module.exports = function (context, req) {
     return __awaiter(this, void 0, void 0, function* () {
         let MASTERPASS = "ikbenadmin";
@@ -35,20 +38,18 @@ module.exports = function (context, req) {
                 // update the database, remove the sessionID.
                 // get the km.
                 if (km < worker.km) {
-                    context.res = {
-                        // send the same value back.
-                        // redirect back to the same link, update the 
-                        // Inject link into an html template???????
-                        body: `KM LOWER THAN IN THE DATABASE - http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}`
-                    };
+                    // INDEX SITE COMES HERE
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}?low" />`, headers: { "Content-Type": "text/html" } }
+                    context.res = res;
                 }
                 else {
                     worker.sessionID = randomCodeGenerator(10);
                     // SQL update workers km
                     worker.km = km;
-                    context.res = {
-                        body: `Worker's new km is: ${worker.km}km`
-                    };
+
+                    // INDEX SITE COMES HERE
+                    var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=http://127.0.0.1:5500/?${worker.name}?${worker.vehicleCode}?${worker.km}?${sessionID}?ok" />`, headers: { "Content-Type": "text/html" } }
+                    context.res = res;
                 }
             }
             else {
@@ -65,7 +66,8 @@ function generateLink(name, vehicleCode, km) {
     //Search for the worker's name and get his values.
     //change the allowed sessionID.
     worker.sessionID = sessionID;
-    // http://localhost:7071/api/Cedric/adasdasd/123/ikbenadmin
+
+    // INDEX SITE COMES HERE
     let url = `http://127.0.0.1:5500/?${name}?${worker.vehicleCode}?${worker.km}?${sessionID}`;
     return url;
 }
