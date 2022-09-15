@@ -1,7 +1,6 @@
-"use strict";
-
 // CONFIG ---- Start with "http(s)://"" and end with a "/".
 const URLDOMAIN = "http://127.0.0.1:5500/"
+let MASTERPASS = "ikbenadmin";
 // CONFIG ----
 
 
@@ -24,9 +23,17 @@ let worker = {
 }
 // EXAMPLE DB
 
-module.exports = function (context, req) {
+module.exports = async function (context, req, workers) {
+    
+    let test = true
+    if (test)
+    {
+        context.res = {body: workers};
+        return
+    }
+
+
     return __awaiter(this, void 0, void 0, function* () {
-        let MASTERPASS = "ikbenadmin";
         var name = context.bindingData.name;
         var vehicleDescription = context.bindingData.vehicleDescription;
         var km = context.bindingData.km;

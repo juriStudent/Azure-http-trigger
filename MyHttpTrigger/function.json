@@ -1,16 +1,31 @@
 {
   "bindings": [
-  {
+    {
       "type": "httpTrigger",
       "name": "req",
       "direction": "in",
-      "methods": [ "get" ],
+      "methods": [
+        "get",
+        "post"
+      ],
       "route": "{name}/{vehicleDescription}/{km}/{sessionID}"
-  },
-  {
-      "type": "http",
+    },
+    {
       "name": "res",
+      "type": "http",
       "direction": "out"
-  }
+    },
+    {
+      "COMMENT": "DATABASE!!!"
+    },
+    {
+      "name": "workers",
+      "type": "cosmosDB",
+      "direction": "in",
+      "databaseName": "workers",
+      "collectionName": "workers",
+      "sqlQuery": "SELECT * from workers where workers.name = '{name}'",
+      "connectionStringSetting": "connectionStringSetting"
+    }
   ]
 }
