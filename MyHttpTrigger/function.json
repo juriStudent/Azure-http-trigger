@@ -8,7 +8,7 @@
         "get",
         "post"
       ],
-      "route": "{name}/{vehicleDescription}/{km}/{sessionID}"
+      "route": "{surName}/{lastName}/{vehicleCode}/{vehicleDescription}/{km}/{transactionID}"
     },
     {
       "name": "res",
@@ -16,16 +16,22 @@
       "direction": "out"
     },
     {
-      "COMMENT": "DATABASE!!!"
-    },
-    {
-      "name": "workers",
+      "name": "workersIN",
       "type": "cosmosDB",
-      "direction": "in",
       "databaseName": "workers",
       "collectionName": "workers",
-      "sqlQuery": "SELECT * from workers where workers.name = '{name}'",
-      "connectionStringSetting": "connectionStringSetting"
+      "sqlQuery": "SELECT * FROM c where lower(CONCAT(c.surName, c.lastName, c.vehicleCode)) = lower(concat({surName}, {lastName}, {vehicleCode}))",
+      "connectionStringSetting": "connectionStringSetting",
+      "direction": "in"
+    },
+    {
+      "name": "workersOUT",
+      "type": "cosmosDB",
+      "databaseName": "workers",
+      "collectionName": "workers",
+      "createIfNotExists": true,
+      "connectionStringSetting": "connectionStringSetting",
+      "direction": "out"
     }
   ]
 }
