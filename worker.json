@@ -1,9 +1,9 @@
 {
-    "id": "1",
+    "timeID": 1,
     "surName": "Carlos",
     "lastName": "De Voet",
     "vehicleCode": "ABC123",
-    "vehicleDescription": "Een rode Ferrari",
     "km": 213123,
-    "sessionPASS": "1234ZXCVAS"
+    "transactionID": "1234ZXCVAS",
+    "status": "new/submitted"
 }

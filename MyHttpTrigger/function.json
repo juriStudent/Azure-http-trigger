@@ -8,7 +8,7 @@
         "get",
         "post"
       ],
-      "route": "{surName}/{lastName}/{vehicleCode}/{vehicleDescription}/{km}/{transactionID}"
+      "route": "{surName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
     },
     {
       "name": "res",
@@ -16,19 +16,19 @@
       "direction": "out"
     },
     {
-      "name": "workersIN",
+      "name": "databaseIN",
       "type": "cosmosDB",
-      "databaseName": "workers",
-      "collectionName": "workers",
-      "sqlQuery": "SELECT * FROM c where lower(CONCAT(c.surName, c.lastName, c.vehicleCode)) = lower(concat({surName}, {lastName}, {vehicleCode}))",
+      "databaseName": "juri_km",
+      "collectionName": "km_reg",
       "connectionStringSetting": "connectionStringSetting",
+      "sqlQuery": "SELECT * FROM c where LOWER(CONCAT(c.surName, c.lastName, c.vehicleCode)) = LOWER(CONCAT({surName}, {lastName}, {vehicleCode})) ORDER BY c.timeID desc offset 0 LIMIT 1",
       "direction": "in"
     },
     {
       "name": "workersOUT",
       "type": "cosmosDB",
-      "databaseName": "workers",
-      "collectionName": "workers",
+      "databaseName": "juri_km",
+      "collectionName": "km_reg",
       "createIfNotExists": true,
       "connectionStringSetting": "connectionStringSetting",
       "direction": "out"
