@@ -8,6 +8,7 @@
         "get",
         "post"
       ],
+      "authLevel": "anonymous",
       "route": "{surName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
     },
     {
