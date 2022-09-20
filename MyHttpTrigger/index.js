@@ -1,13 +1,17 @@
 // CONFIG ---- Start with "http(s)://"" and end with a "/".
-const URLDOMAIN = "http://127.0.0.1:5500/";
+const URLDOMAIN = "https://jolly-plant-07b53cc03.1.azurestaticapps.net/";
 let MASTERPASS = "ikbenadmin";
 // CONFIG ----
 
 
-module.exports = async function (context, req, workersIN) {
-    workersIN = workersIN[0];
-
-    console.log("here");
+module.exports = async function (context, req, databaseIN) {
+    let lastKM = 0
+    if (databaseIN.length != 0){
+        databaseIN = databaseIN[0];
+        lastKM = databaseIN.km;
+    }
+    // else lastKM stays 0, because the vehicle is never used.
+    
     let surName = context.bindingData.surName;
     let lastName = context.bindingData.lastName;
     let vehicleCode = context.bindingData.vehicleCode;
@@ -15,54 +19,64 @@ module.exports = async function (context, req, workersIN) {
     let km = context.bindingData.km;
     let transactionID = context.bindingData.transactionID;
 
+    let timeID = new Date().getTime() / 1000;
+
     // admin wants to generate a link for the target.
     if (transactionID == MASTERPASS) {
-        let url = generateLink(workersIN, surName, lastName, vehicleCode, vehicleDescription, context);
+        databaseIN = {
+            "timeID": timeID,
+            "surName": surName,
+            "lastName": lastName,
+            "vehicleCode": vehicleCode,
+            "km": lastKM,
+            "transactionID": randomCodeGenerator(10),
+            "status": "new"
+        }
+
+        let url = generateLink(databaseIN, vehicleDescription, context);
         context.res = {
             body: url
         };
     }
     // Target is trying to save his km.
-    else {
-        // Search for the worker's name and get his values.
-        if (workersIN.transactionID == transactionID) {
-            // update the database, remove the transactionID.
-            // get the km.
-            if (km < workersIN.km) {
-                // The value that the user has given is lower than what's in the database.
-                var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${workersIN.name}?${workersIN.vehicleDescription}?${workersIN.km}?${transactionID}?low" />`, headers: { "Content-Type": "text/html" } };
-                context.res = res;
-            }
-            else {
-                workersIN.transactionID = randomCodeGenerator(10);
-                // SQL update worker's km
-                workersIN.km = km;
+    else if (databaseIN.transactionID == transactionID) {
+        // The km input is valid, update it.
+        if (km > lastKM) {
+            // update the user
+            databaseIN = {
+            "id":databaseIN.id,
+            "timeID": timeID,
+            "surName": surName,
+            "lastName": lastName,
+            "vehicleCode": vehicleCode,
+            "km": km,
+            "transactionID": randomCodeGenerator(10),
+            "status": "submitted"
+        }
 
-                // The value that the user has given is ok!
-                var res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${workersIN.name}?${workersIN.vehicleDescription}?${workersIN.km}?${transactionID}?ok" />`, headers: { "Content-Type": "text/html" } };
-                context.res = res;
-            }
+        addWorker(databaseIN, context)
+
+        // The value that the user has given is ok!
+        context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}?ok" />`, headers: { "Content-Type": "text/html" } };
         }
         else {
-            context.res = {
-                body: "INVALID transactionID"
-            };
-            // User's transactionID is not valid. Tell him his link is invalid.
+            // The value that the user has given is lower than what's in the database.
+            context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}?low" />`, headers: { "Content-Type": "text/html" } };
         }
+    } 
+    else {
+        context.res = {
+            body: "INVALID transactionID"
+        };
     }
-};
+}
 
-function generateLink(workersIN, surName, lastName, vehicleCode, vehicleDescription, context) {
-    workersIN.surName = surName;
-    workersIN.lastName = lastName;
-    workersIN.vehicleCode = vehicleCode;
-    workersIN.vehicleDescription = vehicleDescription;
-    workersIN.transactionID = randomCodeGenerator(10);
-
-    updateWorker(workersIN, context);
-
-    // INDEX SITE COMES HERE
-    let url = `${URLDOMAIN}?${surName}?${lastName}?${vehicleCode}?${workersIN.km}?${vehicleDescription}?${workersIN.transactionID}`;
+function generateLink(databaseIN, vehicleDescription, context) {
+   
+    addWorker(databaseIN, context);
+    
+    // URL FOR THE WEBPAGE.
+    let url = `${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}`;
     return url;
 }
 
@@ -76,8 +90,13 @@ function randomCodeGenerator(length) {
     return result;
 }
 
-
 // make the values 'undefined' if you don't want them changed.
-function updateWorker(workersIN, context) {
-    context.bindings.workersOUT = JSON.stringify(workersIN);
+function addWorker(databaseIN, context) {
+    context.bindings.workersOUT = JSON.stringify(databaseIN);
 }
+
+
+
+
+
+
