@@ -12,8 +12,8 @@ module.exports = async function (context, req, databaseIN) {
     }
     // else lastKM stays 0, because the vehicle is never used.
     
-    let surName = context.bindingData.surName;
-    let lastName = context.bindingData.lastName;
+    let surName = (context.bindingData.surName).toLowerCase();
+    let lastName = context.bindingData.lastName.toLowerCase();
     let vehicleCode = context.bindingData.vehicleCode;
     let vehicleDescription = context.bindingData.vehicleDescription;
     let km = context.bindingData.km;
