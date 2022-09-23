@@ -1,6 +1,6 @@
 // CONFIG ---- Start with "http(s)://"" and end with a "/".
 const URLDOMAIN = "https://jolly-plant-07b53cc03.1.azurestaticapps.net/";
-let MASTERPASS = "ikbenadmin";
+let MASTERPASS = "TOP_SECRET";
 // CONFIG ----
 
 
