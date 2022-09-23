@@ -22,7 +22,7 @@
       "databaseName": "juri_km",
       "collectionName": "km_reg",
       "connectionStringSetting": "connectionStringSetting",
-      "sqlQuery": "SELECT * FROM c where LOWER(CONCAT(c.surName, c.lastName, c.vehicleCode)) = LOWER(CONCAT({surName}, {lastName}, {vehicleCode})) ORDER BY c.timeID desc offset 0 LIMIT 1",
+      "sqlQuery": "SELECT * FROM c where LOWER(c.vehicleCode) = LOWER({vehicleCode}) ORDER BY c.timeID desc offset 0 LIMIT 1",
       "direction": "in"
     },
     {
