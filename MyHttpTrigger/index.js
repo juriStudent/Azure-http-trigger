@@ -20,7 +20,7 @@ module.exports = async function (context, req, databaseIN) {
 
     context.res = {
         status: 200, 
-        body: JSONString,
+        body: myJSON,
         headers: {'Content-Type': 'application/json'}
     }
 }
