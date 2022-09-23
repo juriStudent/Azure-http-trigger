@@ -1,6 +1,6 @@
 // CONFIG ---- Start with "http(s)://"" and end with a "/".
 const URLDOMAIN = "https://jolly-plant-07b53cc03.1.azurestaticapps.net/";
-let MASTERPASS = "TOP_SECRET";
+let MASTERPASS = "TOP_MEGA_ULTRA_SECRET";
 // CONFIG ----
 
 
@@ -10,8 +10,9 @@ module.exports = async function (context, req, databaseIN) {
         databaseIN = databaseIN[0];
         lastKM = databaseIN.km;
     }
-    // else lastKM stays 0, because the vehicle is never used.
+    // Otherwise lastKM stays 0, because the vehicle did not exist untill now.
     
+    // Get the url parameters.
     let surName = (context.bindingData.surName).toLowerCase();
     let lastName = context.bindingData.lastName.toLowerCase();
     let vehicleCode = context.bindingData.vehicleCode;
@@ -19,16 +20,25 @@ module.exports = async function (context, req, databaseIN) {
     let km = context.bindingData.km;
     let transactionID = context.bindingData.transactionID;
 
-    let timeID = new Date().getTime() / 1000;
+    let timeID = new Date().getTime() / 1000; // // Milliseconds since Jan 1, 1970, 00:00:00.000 GMT
 
-    // admin wants to generate a link for the target.
+    // Admin wants to generate a link for the target.
     if (transactionID == MASTERPASS) {
+
+        // If the entry is first, replace the value with the desired km.
+        if (lastKM == 0){
+            lastKM = km
+        }
+
+        // Fill in the template for the current worker.
+        // Since the id is not given, Cosmos DB will generate a random unique one for the worker.
         databaseIN = {
             "timeID": timeID,
             "surName": surName,
             "lastName": lastName,
             "vehicleCode": vehicleCode,
             "km": lastKM,
+            "vehicleDescription": vehicleDescription,
             "transactionID": randomCodeGenerator(10),
             "status": "new"
         }
@@ -39,29 +49,30 @@ module.exports = async function (context, req, databaseIN) {
         };
     }
     // Target is trying to save his km.
-    else if (databaseIN.transactionID == transactionID) {
+    else if (databaseIN.status =="new" && databaseIN.transactionID == transactionID) {
         // The km input is valid, update it.
         if (km > lastKM) {
-            // update the user
+            // update the user, his transactionID gets tagged as "EXPIRED".
             databaseIN = {
             "id":databaseIN.id,
             "timeID": timeID,
-            "surName": surName,
-            "lastName": lastName,
-            "vehicleCode": vehicleCode,
+            "surName": databaseIN.surName,
+            "lastName": databaseIN.lastName,
+            "vehicleCode": databaseIN.vehicleCode,
             "km": km,
-            "transactionID": randomCodeGenerator(10),
+            "transactionID": "EXPIRED",
+            "vehicleDescription": databaseIN.vehicleDescription,
             "status": "submitted"
         }
 
         addWorker(databaseIN, context)
 
         // The value that the user has given is ok!
-        context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}?ok" />`, headers: { "Content-Type": "text/html" } };
+        context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${databaseIN.vehicleDescription}?ok" />`, headers: { "Content-Type": "text/html" } };
         }
         else {
             // The value that the user has given is lower than what's in the database.
-            context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}?low" />`, headers: { "Content-Type": "text/html" } };
+            context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${databaseIN.vehicleDescription}?low" />`, headers: { "Content-Type": "text/html" } };
         }
     } 
     else {
