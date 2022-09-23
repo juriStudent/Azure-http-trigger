@@ -1,109 +1,89 @@
-// CONFIG ---- Start with "http(s)://"" and end with a "/".
-const URLDOMAIN = "https://jolly-plant-07b53cc03.1.azurestaticapps.net/";
-let MASTERPASS = "TOP_MEGA_ULTRA_SECRET";
+// CONFIG ---- 
+let URLDOMAIN = "https://witty-rock-00a315803.1.azurestaticapps.net/"
 // CONFIG ----
 
 
 module.exports = async function (context, req, databaseIN) {
-    let lastKM = 0
-    if (databaseIN.length != 0){
-        databaseIN = databaseIN[0];
-        lastKM = databaseIN.km;
+    let page = context.bindingData.page;
+
+
+    let myJSON = ""
+    if (page == false){
+        URLDOMAIN = "https://witty-rock-00a315803.1.azurestaticapps.net/showLinks.html/"
+        myJSON = (filterNew(databaseIN))
+        
     }
-    // Otherwise lastKM stays 0, because the vehicle did not exist untill now.
-    
-    // Get the url parameters.
-    let surName = (context.bindingData.surName).toLowerCase();
-    let lastName = context.bindingData.lastName.toLowerCase();
-    let vehicleCode = context.bindingData.vehicleCode;
-    let vehicleDescription = context.bindingData.vehicleDescription;
-    let km = context.bindingData.km;
-    let transactionID = context.bindingData.transactionID;
-
-    let timeID = new Date().getTime() / 1000; // // Milliseconds since Jan 1, 1970, 00:00:00.000 GMT
-
-    // Admin wants to generate a link for the target.
-    if (transactionID == MASTERPASS) {
-
-        // If the entry is first, replace the value with the desired km.
-        if (lastKM == 0){
-            lastKM = km
-        }
-
-        // Fill in the template for the current worker.
-        // Since the id is not given, Cosmos DB will generate a random unique one for the worker.
-        databaseIN = {
-            "timeID": timeID,
-            "surName": surName,
-            "lastName": lastName,
-            "vehicleCode": vehicleCode,
-            "km": lastKM,
-            "vehicleDescription": vehicleDescription,
-            "transactionID": randomCodeGenerator(10),
-            "status": "new"
-        }
-
-        let url = generateLink(databaseIN, vehicleDescription, context);
-        context.res = {
-            body: url
-        };
+    else{
+        URLDOMAIN = "https://witty-rock-00a315803.1.azurestaticapps.net/index.html/"
+        myJSON = (filterSubmitted(databaseIN))
     }
-    // Target is trying to save his km.
-    else if (databaseIN.status =="new" && databaseIN.transactionID == transactionID) {
-        // The km input is valid, update it.
-        if (km > lastKM) {
-            // update the user, his transactionID gets tagged as "EXPIRED".
-            databaseIN = {
-            "id":databaseIN.id,
-            "timeID": timeID,
-            "surName": databaseIN.surName,
-            "lastName": databaseIN.lastName,
-            "vehicleCode": databaseIN.vehicleCode,
-            "km": km,
-            "transactionID": "EXPIRED",
-            "vehicleDescription": databaseIN.vehicleDescription,
-            "status": "submitted"
-        }
 
-        addWorker(databaseIN, context)
-
-        // The value that the user has given is ok!
-        context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${databaseIN.vehicleDescription}?ok" />`, headers: { "Content-Type": "text/html" } };
-        }
-        else {
-            // The value that the user has given is lower than what's in the database.
-            context.res = { body: `<meta http-equiv=\"refresh\" content=\"0; url=${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${databaseIN.vehicleDescription}?low" />`, headers: { "Content-Type": "text/html" } };
-        }
-    } 
-    else {
-        context.res = {
-            body: "INVALID transactionID"
-        };
+    context.res = {
+        status: 200, 
+        body: JSONString,
+        headers: {'Content-Type': 'application/json'}
     }
 }
 
-function generateLink(databaseIN, vehicleDescription, context) {
-   
-    addWorker(databaseIN, context);
-    
-    // URL FOR THE WEBPAGE.
-    let url = `${URLDOMAIN}?${databaseIN.surName}?${databaseIN.lastName}?${databaseIN.vehicleCode}?${databaseIN.km}?${databaseIN.transactionID}?${vehicleDescription}`;
-    return url;
-}
+function filterSubmitted(JSONArray) {
+    let filteredArray = [];
+    let i = 0;
+    for (let i = 0; i < JSONArray.length; i++) {
+        if (JSONArray[i].status == "submitted"){
+            if (JSONArray[i] == "REMOVE") {
+                continue;
+            }
 
-function randomCodeGenerator(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            let identifier = JSONArray[i].vehicleCode;
+            JSONArray[i]["name"] = JSONArray[i].surName + " " + JSONArray[i].lastName
+            filteredArray.push(JSONArray[i]);
+            JSONArray[i] = "REMOVE";
+
+            for (let i2 = 0; i2 < JSONArray.length; i2++) {
+
+                let identifier2 = JSONArray[i2].vehicleCode;
+
+                if (identifier == identifier2) {
+                    JSONArray[i2] = "REMOVE";
+                }
+            }
+        }
     }
-    return result;
+    return filteredArray;
 }
 
-// make the values 'undefined' if you don't want them changed.
-function addWorker(databaseIN, context) {
-    context.bindings.workersOUT = JSON.stringify(databaseIN);
+function filterNew(JSONArray) {
+
+    let filteredArray = [];
+    let i = 0;
+
+    for (let i = 0; i < JSONArray.length; i++) {
+        if (JSONArray[i].status == "new"){
+            if (JSONArray[i] == "REMOVE") {
+                continue;
+            }
+
+            let identifier = JSONArray[i].vehicleCode;
+            JSONArray[i]["name"] = JSONArray[i].surName + " " + JSONArray[i].lastName
+            // https://jolly-plant-07b53cc03.1.azurestaticapps.net/?{surname}?{lastname}?{vehicleCode}?0?2V5IVYPQ3T?{vehicleDescription}
+            JSONArray[i]["link"] = "https://jolly-plant-07b53cc03.1.azurestaticapps.net/?" + JSONArray[i].surName + "?" + JSONArray[i].lastName + "?" + JSONArray[i].vehicleCode + "?" + JSONArray[i].km + "?" + JSONArray[i].transactionID + "?" + JSONArray[i].vehicleDescription
+
+
+
+            filteredArray.push(JSONArray[i]);
+            JSONArray[i] = "REMOVE";
+
+            for (let i2 = 0; i2 < JSONArray.length; i2++) {
+
+                let identifier2 = JSONArray[i2].vehicleCode;
+
+                if (identifier == identifier2) {
+                    JSONArray[i2] = "REMOVE";
+                }
+            }
+        }
+    }
+    return filteredArray;
 }
 
 
