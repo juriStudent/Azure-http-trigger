@@ -9,7 +9,7 @@
         "post"
       ],
       "authLevel": "anonymous",
-      "route": "{page}"
+      "route": "{surName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
     },
     {
       "name": "res",
@@ -22,7 +22,7 @@
       "databaseName": "juri_km",
       "collectionName": "km_reg",
       "connectionStringSetting": "connectionStringSetting",
-      "sqlQuery": "SELECT * from c ORDER BY c.timeID DESC",
+      "sqlQuery": "SELECT * FROM c where LOWER(c.vehicleCode) = LOWER({vehicleCode}) ORDER BY c.timeID desc offset 0 LIMIT 1",
       "direction": "in"
     },
     {
