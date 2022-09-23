@@ -9,7 +9,7 @@
         "post"
       ],
       "authLevel": "anonymous",
-      "route": "{surName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
+      "route": "{page}"
     },
     {
       "name": "res",
@@ -22,7 +22,7 @@
       "databaseName": "juri_km",
       "collectionName": "km_reg",
       "connectionStringSetting": "connectionStringSetting",
-      "sqlQuery": "SELECT * FROM c where LOWER(CONCAT(c.surName, c.lastName, c.vehicleCode)) = LOWER(CONCAT({surName}, {lastName}, {vehicleCode})) ORDER BY c.timeID desc offset 0 LIMIT 1",
+      "sqlQuery": "SELECT * from c ORDER BY c.timeID DESC",
       "direction": "in"
     },
     {
