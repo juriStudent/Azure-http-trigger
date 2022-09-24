@@ -9,7 +9,7 @@
         "post"
       ],
       "authLevel": "anonymous",
-      "route": "{surName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
+      "route": "{firstName}/{lastName}/{vehicleCode}/{km}/{transactionID}/{vehicleDescription}"
     },
     {
       "name": "res",
